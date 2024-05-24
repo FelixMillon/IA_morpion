@@ -9,86 +9,85 @@ collection = db.parties
 
 largeur = 3
 
-for i in range(50):
-    print("Joueur 1:")
-    joueur1 = "IA1"
-    print("Joueur 2:")
-    joueur2 = "IA2"
+print("Joueur 1:")
+joueur1 = input()
+print("Joueur 2:")
+joueur2 = input()
 
-    grid = Grid(
-        largeur=largeur,
-        joueur1=joueur1,
-        joueur2=joueur2
-    )
+grid = Grid(
+    largeur=largeur,
+    joueur1=joueur1,
+    joueur2=joueur2
+)
 
-    partie = {}
-    victorious = None
-    grid.initialise_grid()
+partie = {}
+victorious = None
+grid.initialise_grid()
 
-    victory = False
-    while not victory:
-        tour = grid.get_tour()
-        joueur = grid.get_joueur()
-        print(f"Tour {tour}")
-        print(f"Au tour de {joueur}")
-        is_valid = False
+victory = False
+while not victory:
+    tour = grid.get_tour()
+    joueur = grid.get_joueur()
+    print(f"Tour {tour}")
+    print(f"Au tour de {joueur}")
+    is_valid = False
 
-        if not joueur.startswith("IA"):
-            while not is_valid:
-                is_valid_line = False
-                is_valid_column = False
+    if not joueur.startswith("IA"):
+        while not is_valid:
+            is_valid_line = False
+            is_valid_column = False
 
-                while not is_valid_line:
-                    print("Choose the line: ")
-                    line = input()
-                    if Grid.is_parsable(line):
-                        line = int(line) - 1
-                        is_valid_line = grid.is_valid_in_grid(line)
-                        if not is_valid_line:
-                            print(f"Choose a number between 1 and {largeur}")
-                    else:
+            while not is_valid_line:
+                print("Choose the line: ")
+                line = input()
+                if Grid.is_parsable(line):
+                    line = int(line) - 1
+                    is_valid_line = grid.is_valid_in_grid(line)
+                    if not is_valid_line:
                         print(f"Choose a number between 1 and {largeur}")
-
-                while not is_valid_column:
-                    print("Choose the column: ")
-                    column = input()
-                    if Grid.is_parsable(column):
-                        column = int(column) - 1
-                        is_valid_column = grid.is_valid_in_grid(column)
-                        if not is_valid_column:
-                            print(f"Choose a number between 1 and {largeur}")
-                    else:
-                        print(f"Choose a number between 1 et {largeur}")
-
-                if tour == 0 and line == 1 and column == 1:
-                    print("Impossible de jouer le centre au premier tour")
                 else:
-                    is_valid = grid.case_is_free(line, column)
-                    if not is_valid:
-                        print("Case not free")
-        else:
-            line, column = grid.adversaire.next_move()
+                    print(f"Choose a number between 1 and {largeur}")
 
-        victory = grid.jouer(line, column)
-        grid.afficher_grid()
+            while not is_valid_column:
+                print("Choose the column: ")
+                column = input()
+                if Grid.is_parsable(column):
+                    column = int(column) - 1
+                    is_valid_column = grid.is_valid_in_grid(column)
+                    if not is_valid_column:
+                        print(f"Choose a number between 1 and {largeur}")
+                else:
+                    print(f"Choose a number between 1 et {largeur}")
 
-        if tour >= 8 and not victory:
-            print("Match nul")
-            break
+            if tour == 0 and line == 1 and column == 1:
+                print("Impossible de jouer le centre au premier tour")
+            else:
+                is_valid = grid.case_is_free(line, column)
+                if not is_valid:
+                    print("Case not free")
+    else:
+        line, column = grid.adversaire.next_move()
 
-        partie[str(tour)] = {
-            "line": line,
-            "column": column,
-            "victory": victory,
-            "timestamp": datetime.now(),
-            "joueur": joueur
-        }
+    victory = grid.jouer(line, column)
+    grid.afficher_grid()
 
-    if victory:
-        victorious = joueur
-        print(f'Victoire du joueur {joueur}')
+    if tour >= 8 and not victory:
+        print("Match nul")
+        break
 
-    partie["_id"] = str(uuid.uuid4())
-    partie["victorious"] = victorious
+    partie[str(tour)] = {
+        "line": line,
+        "column": column,
+        "victory": victory,
+        "timestamp": datetime.now(),
+        "joueur": joueur
+    }
 
-    collection.insert_one(partie)
+if victory:
+    victorious = joueur
+    print(f'Victoire du joueur {joueur}')
+
+partie["_id"] = str(uuid.uuid4())
+partie["victorious"] = victorious
+
+collection.insert_one(partie)

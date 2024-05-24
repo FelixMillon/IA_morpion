@@ -7,7 +7,7 @@ class Grid:
         self.grid = []
         self.joueur1 = joueur1
         self.joueur2 = joueur2
-        self.adversaire = Adversaire(self)  # Initialisation de la classe Adversaire
+        self.adversaire = Adversaire(self)
 
     def initialise_grid(self):
         for i in range(self.largeur):
